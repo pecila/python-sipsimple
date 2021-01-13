@@ -99,13 +99,13 @@ class PJSIP_build_ext(build_ext):
             if not silent:
                 sys.stdout.write(stdout)
                 sys.stderr.write(stderr)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.ENOENT:
                 raise RuntimeError('"%s" is not present on this system' % cmdline[0])
             else:
                 raise
         if returncode != 0:
-            raise RuntimeError('Got return value %d while executing "%s", stderr output was:\n%s' % (returncode, " ".join(cmdline), stderr.rstrip("\n")))
+            raise RuntimeError('Got return value %d while executing "%s", stderr output was:\n%s' % (returncode, " ".join(cmdline), stderr.decode('utf-8').rstrip("\n")))
         return stdout
 
     @staticmethod
@@ -125,13 +125,13 @@ class PJSIP_build_ext(build_ext):
     def get_makefile_variables(cls, makefile):
         """Returns all variables in a makefile as a dict"""
         stdout = cls.distutils_exec_process([cls.get_make_cmd(), "-f", makefile, "-pR", makefile], silent=True)
-        return dict(tup for tup in re.findall("(^[a-zA-Z]\w+)\s*:?=\s*(.*)$", stdout, re.MULTILINE))
+        return dict(tup for tup in re.findall("(^[a-zA-Z]\w+)\s*:?=\s*(.*)$", stdout.decode('utf-8'), re.MULTILINE))
 
     @classmethod
     def makedirs(cls, path):
         try:
             os.makedirs(path)
-        except OSError, e:
+        except OSError as e:
             if e.errno==errno.EEXIST and os.path.isdir(path) and os.access(path, os.R_OK | os.W_OK | os.X_OK):
                 return
             raise
@@ -145,7 +145,9 @@ class PJSIP_build_ext(build_ext):
     def configure_pjsip(self):
         log.info("Configuring PJSIP")
         with open(os.path.join(self.build_dir, "pjlib", "include", "pj", "config_site.h"), "wb") as f:
-            f.write("\n".join(self.config_site+[""]))
+            write_this = "\n".join(self.config_site+[""])
+            #f.write("\n".join(self.config_site+[""]))
+            f.write(write_this.encode())
         cflags = "-DNDEBUG -g -fPIC -fno-omit-frame-pointer -fno-strict-aliasing -Wno-unused-label"
         if self.debug or hasattr(sys, 'gettotalrefcount'):
             log.info("PJSIP will be built without optimizations")
@@ -178,7 +180,7 @@ class PJSIP_build_ext(build_ext):
         log.info("Cleaning PJSIP")
         try:
             shutil.rmtree(self.build_dir)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.ENOENT:
                 return
             raise
