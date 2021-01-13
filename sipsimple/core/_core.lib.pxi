@@ -1,4 +1,3 @@
-
 import sys
 
 
@@ -146,7 +145,7 @@ cdef class PJSIPEndpoint:
         self._make_local_addr(&local_addr, self._local_ip_used, port)
         pjsip_tls_setting_default(&tls_setting)
         # The following value needs to be reasonably low, as TLS negotiation hogs the PJSIP polling loop
-        tls_setting.timeout.sec = self._tls_timeout / 1000
+        tls_setting.timeout.sec = long(self._tls_timeout / 1000)
         tls_setting.timeout.msec = self._tls_timeout % 1000
         if self._tls_ca_file is not None:
             tls_setting.ca_list_file = self._tls_ca_file.pj_str
@@ -529,7 +528,7 @@ cdef void _transport_state_cb(pjsip_transport *tp, pjsip_transport_state state, 
 
     if pj_sockaddr_has_addr(&tp.local_addr):
         pj_sockaddr_print(&tp.local_addr, buf, 512, 0)
-        local_address = '%s:%d' % (PyString_FromString(buf), pj_sockaddr_get_port(&tp.local_addr))
+        local_address = '%s:%d' % (PyUnicode_FromString(buf), pj_sockaddr_get_port(&tp.local_addr))
     else:
         local_address = None
     remote_address = '%s:%d' % (_pj_str_to_str(tp.remote_name.host), tp.remote_name.port)

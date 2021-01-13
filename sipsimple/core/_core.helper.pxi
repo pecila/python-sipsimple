@@ -200,7 +200,7 @@ cdef class SIPURI(BaseSIPURI):
     def parse(cls, object uri_str):
         if not isinstance(uri_str, basestring):
             raise TypeError('a string or unicode is required')
-        cdef bytes uri_bytes = str(uri_str)
+        cdef bytes uri_bytes = str(uri_str).encode()
         cdef pjsip_uri *uri = NULL
         cdef pj_pool_t *pool = NULL
         cdef pj_str_t tmp
@@ -261,7 +261,7 @@ cdef class FrozenSIPURI(BaseSIPURI):
     def parse(cls, object uri_str):
         if not isinstance(uri_str, basestring):
             raise TypeError('a string or unicode is required')
-        cdef bytes uri_bytes = str(uri_str)
+        cdef bytes uri_bytes = str(uri_str).encode()
         cdef pjsip_uri *uri = NULL
         cdef pj_pool_t *pool = NULL
         cdef pj_str_t tmp

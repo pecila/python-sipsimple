@@ -157,11 +157,12 @@ cdef class frozendict:
 # functions
 
 cdef int _str_to_pj_str(object string, pj_str_t *pj_str) except -1:
-    pj_str.ptr = PyString_AsString(string)
-    pj_str.slen = len(string)
+    res = PyUnicode_DATA(string)
+    pj_str.ptr = res 
+    pj_str.slen = len(res)
 
 cdef object _pj_str_to_str(pj_str_t pj_str):
-    return PyString_FromStringAndSize(pj_str.ptr, pj_str.slen)
+    return PyUnicode_FromStringAndSize(pj_str.ptr, pj_str.slen)
 
 cdef object _pj_status_to_str(int status):
     cdef char buf[PJ_ERR_MSG_SIZE]
@@ -282,7 +283,7 @@ cdef int _pjsip_msg_to_dict(pjsip_msg *msg, dict info_dict) except -1:
         if status != 0:
             info_dict["body"] = None
         else:
-            info_dict["body"] = PyString_FromStringAndSize(buf, buf_len)
+            info_dict["body"] = PyUnicode_FromStringAndSize(buf, buf_len)
     if msg.type == PJSIP_REQUEST_MSG:
         info_dict["method"] = _pj_str_to_str(msg.line.req.method.name)
         # You need to call pjsip_uri_get_uri on the request URI if the message is for transmitting,

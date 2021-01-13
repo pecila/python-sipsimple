@@ -24,7 +24,10 @@ cdef pjmedia_sdp_session* _parse_sdp_session(str sdp):
     cdef int status
     cdef pjmedia_sdp_session *sdp_session
 
-    status = pjmedia_sdp_parse(_get_ua()._pjsip_endpoint._pool, PyString_AsString(sdp), PyString_Size(sdp), &sdp_session)
+    unic = PyUnicode_DATA(sdp)
+    unic_size = PyUnicode_GET_LENGTH(unic)
+
+    status = pjmedia_sdp_parse(_get_ua()._pjsip_endpoint._pool, unic, unic_size, &sdp_session)
     if status != 0:
         raise PJSIPError("failed to parse SDP", status)
     return sdp_session
@@ -42,7 +45,7 @@ cdef class BaseSDPSession:
         cdef int buf_len
         buf_len = pjmedia_sdp_print(self.get_sdp_session(), cbuf, sizeof(cbuf))
         if buf_len > -1:
-            return PyString_FromStringAndSize(cbuf, buf_len)
+            return PyUnicode_FromStringAndSize(cbuf, buf_len)
         return ''
 
     def __richcmp__(self, other, op):
@@ -1117,7 +1120,7 @@ cdef class SDPNegotiator:
         def __get__(self):
             if self._neg == NULL:
                 return None
-            return PyString_FromString(pjmedia_sdp_neg_state_str(pjmedia_sdp_neg_get_state(self._neg)))
+            return PyUnicode_FromString(pjmedia_sdp_neg_state_str(pjmedia_sdp_neg_get_state(self._neg)))
 
     property active_local:
 

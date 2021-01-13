@@ -1,4 +1,4 @@
-# cython: language_level=2
+# cython: language_level=3
 
 cdef extern from *:
     ctypedef char *char_ptr_const "const char *"
@@ -15,10 +15,14 @@ from libc.string cimport memcpy
 
 from cpython.float cimport PyFloat_AsDouble
 from cpython.ref cimport Py_INCREF, Py_DECREF
-from cpython.string cimport PyString_FromString, PyString_FromStringAndSize, PyString_AsString, PyString_Size
+#from cpython.string cimport PyUnicode_FromString, PyUnicode_FromStringAndSize, PyBytes_AsString, PyUnicode_Size
 
 cdef extern from "Python.h":
+    object PyUnicode_FromStringAndSize(const char *u, const int s)
     object PyUnicode_FromString(const char *u)
+    object PyUnicode_AsUTF8String(const char *u)
+    object PyUnicode_GET_LENGTH(const char *u)
+    object PyUnicode_DATA(object string)
 
 
 # PJSIP imports
