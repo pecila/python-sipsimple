@@ -21,8 +21,8 @@ cdef extern from "Python.h":
     object PyUnicode_FromStringAndSize(const char *u, const int s)
     object PyUnicode_FromString(const char *u)
     object PyUnicode_AsUTF8String(const char *u)
-    object PyUnicode_GET_LENGTH(const char *u)
-    object PyUnicode_DATA(object string)
+    int PyUnicode_GET_LENGTH(const char *u)
+    char* PyUnicode_DATA(object string)
 
 
 # PJSIP imports

@@ -26,7 +26,7 @@ from eventlib.green.httplib import BadStatusLine
 from twisted.internet.error import ConnectionLost
 from xcaplib.green import XCAPClient
 from xcaplib.error import HTTPError
-from zope.interface import implements
+from zope.interface import implementer
 
 from sipsimple import log
 from sipsimple.account.subscription import Subscriber, Content
@@ -675,8 +675,8 @@ class XCAPSubscriber(Subscriber):
         return Content(resourcelists.ResourceLists([rlist]).toxml(), resourcelists.ResourceListsDocument.content_type)
 
 
+@implementer(IObserver)
 class XCAPManager(object):
-    implements(IObserver)
 
     def __init__(self, account):
         from sipsimple.application import SIPApplication
@@ -759,7 +759,7 @@ class XCAPManager(object):
     def rls_dialog_uri(self):
         return SIPAddress('%s+dialog@%s' % (self.account.id.username, self.account.id.domain))
 
-    @execute_once
+    #@execute_once
     def init(self):
         """
         Initializes the XCAP manager before it can be started. Needs to be

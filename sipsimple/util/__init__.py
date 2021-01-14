@@ -129,7 +129,8 @@ class UserInfo(object, metaclass=Singleton):
         else:
             import pwd
             name = pwd.getpwuid(os.getuid()).pw_name
-        return name.decode(sys.getfilesystemencoding())
+        return name
+        #return name.decode(sys.getfilesystemencoding())
 
     @property
     def fullname(self):
@@ -138,7 +139,8 @@ class UserInfo(object, metaclass=Singleton):
         else:
             import pwd
             name = pwd.getpwuid(os.getuid()).pw_gecos.split(',', 1)[0] or pwd.getpwuid(os.getuid()).pw_name
-        return name.decode(sys.getfilesystemencoding())
+        return name
+        #return name.decode(sys.getfilesystemencoding())
 
 user_info = UserInfo()
 del UserInfo

@@ -18,7 +18,7 @@ from application.system import host as Host
 from eventlib import coros, proc
 from gnutls.crypto import X509Certificate, X509PrivateKey
 from gnutls.interfaces.twisted import X509Credentials
-from zope.interface import implements
+from zope.interface import implementer
 
 from sipsimple.account.bonjour import BonjourServices, _bonjour
 from sipsimple.account.publication import PresencePublisher, DialogPublisher
@@ -97,6 +97,7 @@ class MSRPSettings(SettingsGroup):
     connection_model = Setting(type=MSRPConnectionModel, default='relay')
 
 
+@implementer(IObserver)
 class Account(SettingsObject):
     """
     Object representing a SIP account. Contains configuration settings and
@@ -122,7 +123,6 @@ class Account(SettingsObject):
      * SIPAccountDidDeactivate
     """
 
-    implements(IObserver)
 
     __group__ = 'Accounts'
     __id__ = SettingsObjectID(type=SIPAddress)
@@ -523,6 +523,7 @@ class BonjourAccountEnabledSetting(Setting):
         Setting.__set__(self, obj, value)
 
 
+@implementer(IObserver)
 class BonjourAccount(SettingsObject):
     """
     Object representing a bonjour account. Contains configuration settings and
@@ -548,7 +549,6 @@ class BonjourAccount(SettingsObject):
      * SIPAccountDidDeactivate
     """
 
-    implements(IObserver)
 
     __group__ = 'Accounts'
     __id__ = SIPAddress('bonjour@local')
@@ -697,6 +697,7 @@ class BonjourAccount(SettingsObject):
             notification_center.post_notification('SIPAccountDidDeactivate', sender=self)
 
 
+@implementer(IObserver)
 class AccountManager(object, metaclass=Singleton):
     """
     This is a singleton object which manages all the SIP accounts. It is
@@ -712,7 +713,6 @@ class AccountManager(object, metaclass=Singleton):
      * SIPAccountManagerDidChangeDefaultAccount
     """
 
-    implements(IObserver)
 
     def __init__(self):
         self._lock = Lock()
@@ -721,7 +721,7 @@ class AccountManager(object, metaclass=Singleton):
         notification_center.add_observer(self, name='CFGSettingsObjectWasActivated')
         notification_center.add_observer(self, name='CFGSettingsObjectWasCreated')
 
-    @execute_once
+    #@execute_once
     def load(self):
         """
         Load all accounts from the configuration. The accounts will not be
